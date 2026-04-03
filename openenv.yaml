@@ -1,0 +1,49 @@
+name: email-triage
+version: "1.0.0"
+description: >
+  A real-world email triage and response environment where an AI agent must
+  process an inbox: classify urgency, route to the correct department, draft
+  appropriate replies, and manage follow-ups.
+author: openenv-hackathon
+tags:
+  - openenv
+  - email
+  - triage
+  - nlp
+  - customer-support
+  - real-world
+
+tasks:
+  - name: triage_classify
+    description: Classify a batch of 10 emails by urgency and department.
+    difficulty: easy
+    max_steps: 20
+    reward_range: [0.0, 1.0]
+
+  - name: triage_respond
+    description: Classify each email and draft a professional reply.
+    difficulty: medium
+    max_steps: 30
+    reward_range: [0.0, 1.0]
+
+  - name: triage_full_workflow
+    description: Full inbox management including summary report.
+    difficulty: hard
+    max_steps: 50
+    reward_range: [0.0, 1.0]
+
+action_space:
+  type: structured
+  description: Agent submits JSON with action_type and associated fields.
+
+observation_space:
+  type: structured
+  description: Agent receives current email, inbox stats, and step feedback.
+
+reward:
+  type: shaped
+  description: Partial credit every step based on classification, reply quality, escalation, spam detection.
+
+docker:
+  image: python:3.11-slim
+  port: 7860
