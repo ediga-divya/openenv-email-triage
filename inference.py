@@ -96,3 +96,41 @@ def run_episode(client, task_name):
                 log_step(step, json.dumps(action), 0.0, True, "step_failed")
                 rewards.append(0.0)
                 steps_taken = step
+                break
+
+            reward = float(result.get("reward", 0.0))
+            done = bool(result.get("done", False))
+            obs = result.get("observation", obs)
+            rewards.append(reward)
+            steps_taken = step
+            log_step(step=step, action=json.dumps(action), reward=reward, done=done, error=None)
+
+        score = min(max(sum(rewards) / MAX_STEPS, 0.0), 1.0)
+        success = score >= SUCCESS_SCORE_THRESHOLD
+
+    except Exception as e:
+        sys.stdout.write(f"[DEBUG] episode error: {e}\n")
+        sys.stdout.flush()
+        if not rewards:
+            log_step(1, "next_email", 0.0, True, str(e))
+            rewards = [0.0]
+            steps_taken = 1
+
+    finally:
+        log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
+
+    return score
+
+def main():
+    client = None
+    try:
+        client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+    except Exception as e:
+        sys.stdout.write(f"[DEBUG] client error: {e}\n")
+        sys.stdout.flush()
+
+    for task in TASKS:
+        run_episode(client, task)
+
+if __name__ == "__main__":
+    main()
