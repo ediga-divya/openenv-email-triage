@@ -2,7 +2,6 @@ import os, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 from email_env import EmailAction, EmailTriageEnv
 
@@ -16,10 +15,6 @@ class ResetRequest(BaseModel):
 @app.get("/health")
 def health():
     return {"status": "ok", "task": _env.task_name}
-
-@app.get("/tasks")
-def list_tasks():
-    return {"tasks": EmailTriageEnv.TASK_NAMES}
 
 @app.post("/reset")
 def reset(req: ResetRequest = ResetRequest()):
